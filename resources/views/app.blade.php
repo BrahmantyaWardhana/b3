@@ -87,15 +87,16 @@
       const _replace = history.replaceState;
       history.pushState = function () {
         _push.apply(this, arguments);
-        queueMicrotask(() => sendIfNewUrl());
+        queueMicrotask(() => sendIfNewUrl('pushstate'));
       };
       history.replaceState = function () {
         _replace.apply(this, arguments);
-        queueMicrotask(() => sendIfNewUrl());
+        queueMicrotask(() => sendIfNewUrl('replacestate'));
       };
-      window.addEventListener(() => sendIfNewUrl());
+      window.addEventListener('popstate', () => sendIfNewUrl('popstate'));
     })();
   </script>
+
 
 
   @viteReactRefresh
