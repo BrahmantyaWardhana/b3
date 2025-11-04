@@ -71,7 +71,7 @@
         }
       }
 
-      function sendIfNewUrl(reason) {
+      function sendIfNewUrl() {
         const curr = location.href;
         if (curr === lastSentUrl) return;  // dedupe per-URL (avoids double on initial render)
         send(SITE_KEY, prevUrl);
@@ -87,13 +87,13 @@
       const _replace = history.replaceState;
       history.pushState = function () {
         _push.apply(this, arguments);
-        queueMicrotask(() => sendIfNewUrl('pushstate'));
+        queueMicrotask(() => sendIfNewUrl());
       };
       history.replaceState = function () {
         _replace.apply(this, arguments);
-        queueMicrotask(() => sendIfNewUrl('replacestate'));
+        queueMicrotask(() => sendIfNewUrl());
       };
-      window.addEventListener('popstate', () => sendIfNewUrl('popstate'));
+      window.addEventListener(() => sendIfNewUrl());
     })();
   </script>
 
