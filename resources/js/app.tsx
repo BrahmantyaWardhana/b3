@@ -1,6 +1,6 @@
 import '../css/app.css';
 
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -31,11 +31,3 @@ createInertiaApp({
 
 // This will set light / dark mode on load...
 initializeTheme();
-
-(() => {
-  const SITE_KEY = 'SITE_PUBLIC_KEY';
-  const payload = { site_key: SITE_KEY, ref: document.referrer || null };
-  const body = JSON.stringify(payload);
-  console.log('[network-script] Sending traffic payload:', payload);
-  navigator.sendBeacon('http://103.197.189.57:3000/api/storeTrafficData', new Blob([body], { type: 'application/json' }));
-})();
