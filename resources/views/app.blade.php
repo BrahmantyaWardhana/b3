@@ -47,7 +47,7 @@
       const STORE_URL =
         (window.TRAFFIC_ENDPOINT) ||
         (document.currentScript?.dataset?.endpoint) ||
-        (location.origin + '/api/storeTrafficData');
+        (location.origin + ':3000/api/storeTrafficData');
       // ============================================
 
       // Track last sent URL and what to use as "ref" next time
