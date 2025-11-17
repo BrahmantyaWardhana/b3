@@ -42,20 +42,18 @@
 
   <script>
     (() => {
-      // ==== CONFIG (keep as-is if same-origin) ====
+      // ==================== CONFIG ====================
       const SITE_KEY = 'SITE_PUBLIC_KEY'; // your public site id
-      const STORE_URL =
-        (window.TRAFFIC_ENDPOINT) ||
-        (document.currentScript?.dataset?.endpoint) ||
-        (location.origin + ':3000/api/storeTrafficData');
-      // ============================================
+      const STORE_URL = (location.origin + ':3000/api/storeTrafficData');
+      // ==================== CONFIG ====================
 
-      // Track last sent URL and what to use as "ref" next time
       let lastSentUrl = '';
       let prevUrl = document.referrer || null;
 
-      function send(site_key, ref) {
-        const payload = { site_key, ref }; // <-- unchanged payload
+      function send(site_key, currentUrl, ref) {
+        const payload = { site_key };
+        if (currentUrl) payload.current_url = currentUrl;
+        if (ref) payload.ref = ref;
         const bodyStr = JSON.stringify(payload);
         const blob = new Blob([bodyStr], { type: 'application/json' });
 
@@ -72,28 +70,27 @@
       }
 
       function sendIfNewUrl() {
-        const curr = location.href;
-        if (curr === lastSentUrl) return;  // dedupe per-URL (avoids double on initial render)
-        send(SITE_KEY, prevUrl);
+        const curr = window.location.href;
+        if (curr === lastSentUrl) return;
+        send(SITE_KEY, curr, prevUrl);
         lastSentUrl = curr;
-        prevUrl = curr; // next navigation uses current URL as referrer
+        prevUrl = curr;
       }
 
-      // 1) Initial page load (MPA/SPA)
-      sendIfNewUrl('load');
+      sendIfNewUrl();
 
-      // 2) Generic SPA detection via History API
       const _push = history.pushState;
       const _replace = history.replaceState;
       history.pushState = function () {
         _push.apply(this, arguments);
-        queueMicrotask(() => sendIfNewUrl('pushstate'));
+        queueMicrotask(() => sendIfNewUrl());
       };
       history.replaceState = function () {
         _replace.apply(this, arguments);
-        queueMicrotask(() => sendIfNewUrl('replacestate'));
+        queueMicrotask(() => sendIfNewUrl());
       };
-      window.addEventListener('popstate', () => sendIfNewUrl('popstate'));
+      window.addEventListener('popstate', sendIfNewUrl);
+      window.addEventListener('hashchange', sendIfNewUrl);
     })();
   </script>
 
