@@ -44,7 +44,7 @@
     (() => {
       // ==================== CONFIG ====================
       const SITE_KEY = 'SITE_PUBLIC_KEY'; // your public site id
-      const STORE_URL = ('127.0.0.1:3000/api/storeTrafficData');
+      const STORE_URL = '127.0.0.1:3000/api/storeTrafficData';
       // ==================== CONFIG ====================
 
       let lastSentUrl = '';
