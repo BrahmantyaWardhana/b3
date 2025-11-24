@@ -40,61 +40,17 @@
   <link rel="preconnect" href="https://fonts.bunny.net">
   <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
 
-  <script>
-    (() => {
-      // ==================== CONFIG ====================
-      const SITE_KEY = 'SITE_PUBLIC_KEY'; // your public site id
-      const STORE_URL = 'http://127.0.0.1:3000/api/storeTrafficData';
-      // ==================== CONFIG ====================
-
-      let lastSentUrl = '';
-      let prevUrl = document.referrer || null;
-
-      function send(site_key, currentUrl, ref) {
-        const payload = { site_key };
-        if (currentUrl) payload.current_url = currentUrl;
-        if (ref) payload.ref = ref;
-        const bodyStr = JSON.stringify(payload);
-        const blob = new Blob([bodyStr], { type: 'application/json' });
-
-        console.log('[network-script] Sending traffic payload:', payload);
-
-        if (!navigator.sendBeacon || !navigator.sendBeacon(STORE_URL, blob)) {
-          fetch(STORE_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: bodyStr,
-            keepalive: true
-          }).catch(() => { });
-        }
-      }
-
-      function sendIfNewUrl() {
-        const curr = window.location.href;
-        if (curr === lastSentUrl) return;
-        send(SITE_KEY, curr, prevUrl);
-        lastSentUrl = curr;
-        prevUrl = curr;
-      }
-
-      sendIfNewUrl();
-
-      const _push = history.pushState;
-      const _replace = history.replaceState;
-      history.pushState = function () {
-        _push.apply(this, arguments);
-        queueMicrotask(() => sendIfNewUrl());
-      };
-      history.replaceState = function () {
-        _replace.apply(this, arguments);
-        queueMicrotask(() => sendIfNewUrl());
-      };
-      window.addEventListener('popstate', sendIfNewUrl);
-      window.addEventListener('hashchange', sendIfNewUrl);
-    })();
+  <!-- Monitoring tag -->
+  <script type="text/javascript">
+    (function (w, d, u, f) {
+      if (w[f]) return;
+      w[f] = true;
+      var s = d.createElement('script');
+      s.async = true;
+      s.src = u;
+      d.getElementsByTagName('head')[0].appendChild(s);
+    })(window, document, 'http://103.103.23.202/beacon/rum.js?appKey=SITE_PUBLIC_KEY', 'mtag');
   </script>
-
-
 
   @viteReactRefresh
   @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])
